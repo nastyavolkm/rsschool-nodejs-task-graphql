@@ -21,34 +21,33 @@ export const user = new GraphQLObjectType<UserModel, ContextModel>({
                 type: profile as GraphQLObjectType,
                 resolve: async ({ id }, _args, { prisma }) => {
                     return await prisma.profile.findUnique({
-                        where: { id }
+                        where: { userId: id },
                     });
                 },
             },
             posts: {
                 type: new GraphQLList(post),
                 resolve: async ({ id }, _args, { prisma }) => {
-                    return await prisma.post.findUnique({
-                        where: { id }
+                    return await prisma.post.findMany({
+                        where: { authorId: id },
                     });
                 },
             },
             userSubscribedTo: {
                 type: new GraphQLList(user),
-                resolve: async ({ id }, args, { prisma }) => {
-                    const result = await prisma.user.findUnique({
-                        where: { id },
-                        include: {
-                            userSubscribedTo: true,
-                            subscribedToUser: true,
-                        },
-                    });
-
-                    return result ? [result] : [];
+                resolve: async ({ id }, _args, { prisma }) => {
+                    return await prisma.user.findMany(
+                        { where: { subscribedToUser: { some: { subscriberId: id } } } }
+                    );
                 }
             },
             subscribedToUser: {
                 type: new GraphQLList(user),
+                resolve: async ({ id }, _args, { prisma }) => {
+                    return await prisma.user.findMany(
+                        { where: { userSubscribedTo: { some: { authorId: id } } } }
+                    );
+                }
             },
         }),
     },

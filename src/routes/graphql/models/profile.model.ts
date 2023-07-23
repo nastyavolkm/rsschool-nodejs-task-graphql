@@ -1,10 +1,9 @@
-import { UserModel } from "./user.model.js";
-import { MemberModel } from "./member.model.js";
+import { MemberTypeId } from "../../member-types/schemas.js";
 
 export interface ProfileModel {
     id: string,
     isMale: boolean,
     yearOfBirth: number,
-    memberType: MemberModel,
-    user: UserModel,
+    memberTypeId: MemberTypeId,
+    userId: string,
 }
