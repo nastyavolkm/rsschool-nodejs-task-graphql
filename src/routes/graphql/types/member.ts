@@ -1,5 +1,5 @@
 import { GraphQLEnumType, GraphQLFloat, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType } from "graphql";
-import { profile } from "./profile";
+import { profile } from "./profile.js";
 
 export const memberTypeIdEnum = new GraphQLEnumType({
     name: 'MemberTypeId',
