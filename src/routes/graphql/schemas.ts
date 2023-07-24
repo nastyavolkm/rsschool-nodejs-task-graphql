@@ -1,10 +1,10 @@
 import { Type } from '@fastify/type-provider-typebox';
-import { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLNonNull } from "graphql";
+import { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLString } from "graphql";
 import { member, memberTypeIdEnum } from "./types/member.js";
-import { post } from "./types/post.js";
-import { user } from "./types/user.js";
+import { changePostInput, createPostInput, post } from "./types/post.js";
+import { changeUserInput, createUserInput, user } from "./types/user.js";
 import { UUIDType } from "./types/uuid.js";
-import { profile } from "./types/profile.js";
+import { changeProfileInput, createProfileInput, profile } from "./types/profile.js";
 import { ContextModel } from "./models/context.model.js";
 import { UserModel } from "./models/user.model.js";
 import { ProfileModel } from "./models/profile.model.js";
@@ -104,6 +104,84 @@ const querySchema = new GraphQLObjectType<UserModel, ContextModel>({
     },
 });
 
+const mutationSchema = new GraphQLObjectType<UserModel, ContextModel>({
+    name: 'Mutation',
+    fields: {
+        createUser: {
+            type: user,
+            args: {
+                dto: { type: createUserInput }
+            },
+        },
+        createPost: {
+            type: post as GraphQLObjectType,
+            args: {
+                dto: { type: createPostInput }
+            },
+        },
+        createProfile: {
+            type: profile as GraphQLObjectType,
+            args: {
+                dto: { type: createProfileInput }
+            },
+        },
+        deleteUser: {
+            type: UUIDType,
+            args: {
+                id: { type: UUIDType },
+            },
+        },
+        deletePost: {
+            type: UUIDType,
+            args: {
+                id: { type: UUIDType },
+            }
+        },
+        deleteProfile: {
+            type: UUIDType,
+            args: {
+                id: { type: UUIDType },
+            }
+        },
+        changeUser: {
+            type: user,
+            args: {
+                id: { type: UUIDType },
+                dto: { type: changeUserInput }
+            }
+        },
+        changePost: {
+            type: post as GraphQLObjectType,
+            args: {
+                id: { type: UUIDType },
+                dto: { type: changePostInput }
+            }
+        },
+        changeProfile: {
+            type: profile as GraphQLObjectType,
+            args: {
+                id: { type: UUIDType },
+                dto: { type: changeProfileInput }
+            }
+        },
+        subscribeTo: {
+            type: user,
+            args: {
+                userId: { type: UUIDType },
+                authorId: { type: UUIDType },
+            }
+        },
+        unsubscribeFrom: {
+            type: GraphQLString,
+            args: {
+                userId: { type: UUIDType },
+                authorId: { type: UUIDType },
+            }
+        }
+    },
+});
+
 export const schema = new GraphQLSchema({
     query: querySchema,
+    mutation: mutationSchema,
 });

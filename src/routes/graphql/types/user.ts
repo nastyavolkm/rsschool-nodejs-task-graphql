@@ -1,9 +1,40 @@
-import { GraphQLFloat, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import {
+    GraphQLFloat,
+    GraphQLInputObjectType,
+    GraphQLList,
+    GraphQLNonNull,
+    GraphQLObjectType,
+    GraphQLString
+} from "graphql";
 import { UUIDType } from "./uuid.js";
 import { post } from "./post.js";
 import { profile } from "./profile.js";
 import { ContextModel } from "../models/context.model.js";
 import { UserModel } from "../models/user.model.js";
+
+export const createUserInput = new GraphQLInputObjectType({
+    name: 'CreateUserInput',
+    fields: {
+        name: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        balance: {
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+    },
+});
+
+export const changeUserInput = new GraphQLInputObjectType({
+    name: 'ChangeUserInput',
+    fields: {
+        name: {
+            type: GraphQLString,
+        },
+        balance: {
+            type: GraphQLFloat,
+        },
+    },
+});
 
 export const user = new GraphQLObjectType<UserModel, ContextModel>({
         name: 'User',
