@@ -6,3 +6,9 @@ export interface PostModel {
     content: string,
     author: UserModel,
 }
+
+export interface PostInputModel {
+    title: string,
+    content: string,
+    authorId: string,
+}

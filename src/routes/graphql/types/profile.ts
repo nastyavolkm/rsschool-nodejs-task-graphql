@@ -1,9 +1,10 @@
 import { GraphQLBoolean, GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType } from "graphql";
 import { UUIDType } from "./uuid.js";
 import { user } from "./user.js";
-import { member, memberTypeIdEnum } from "./member.js";
+import { member } from "./member.js";
 import { ProfileModel } from "../models/profile.model.js";
 import { ContextModel } from "../models/context.model.js";
+import { memberTypeIdEnum } from "../models/member-type-id.enum.js";
 
 export const profile = new GraphQLObjectType<ProfileModel, ContextModel>({
     name: 'Profile',

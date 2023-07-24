@@ -1,19 +1,8 @@
-import { GraphQLEnumType, GraphQLFloat, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType } from "graphql";
+import { GraphQLFloat, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType } from "graphql";
 import { profile } from "./profile.js";
 import { ContextModel } from "../models/context.model.js";
 import { MemberModel } from "../models/member.model.js";
-
-export const memberTypeIdEnum = new GraphQLEnumType({
-    name: 'MemberTypeId',
-    values: {
-        'basic': {
-            value: 'basic',
-        },
-        'business': {
-            value: 'business',
-        },
-    },
-});
+import { memberTypeIdEnum } from "../models/member-type-id.enum.js";
 
 export const member = new GraphQLObjectType<MemberModel, ContextModel>({
     name: 'Member',

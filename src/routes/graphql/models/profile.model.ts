@@ -7,3 +7,10 @@ export interface ProfileModel {
     memberTypeId: MemberTypeId,
     userId: string,
 }
+
+export interface ProfileInputModel {
+    isMale: boolean,
+    yearOfBirth: number,
+    memberTypeId: MemberTypeId,
+    userId: string,
+}

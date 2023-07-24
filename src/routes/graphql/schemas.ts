@@ -1,15 +1,16 @@
 import { Type } from '@fastify/type-provider-typebox';
 import { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLString } from "graphql";
-import { member, memberTypeIdEnum } from "./types/member.js";
+import { member } from "./types/member.js";
 import { changePostInput, createPostInput, post } from "./types/post.js";
 import { changeUserInput, createUserInput, user } from "./types/user.js";
 import { UUIDType } from "./types/uuid.js";
 import { changeProfileInput, createProfileInput, profile } from "./types/profile.js";
 import { ContextModel } from "./models/context.model.js";
-import { UserModel } from "./models/user.model.js";
-import { ProfileModel } from "./models/profile.model.js";
+import { UserInputModel, UserModel } from "./models/user.model.js";
+import { ProfileInputModel, ProfileModel } from "./models/profile.model.js";
 import { MemberModel } from "./models/member.model.js";
-import { PostModel } from "./models/post.model.js";
+import { PostInputModel, PostModel } from "./models/post.model.js";
+import { memberTypeIdEnum } from "./models/member-type-id.enum.js";
 
 export const gqlResponseSchema = Type.Partial(
     Type.Object({
@@ -104,7 +105,7 @@ const querySchema = new GraphQLObjectType<UserModel, ContextModel>({
     },
 });
 
-const mutationSchema = new GraphQLObjectType<UserModel, ContextModel>({
+const mutationSchema = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
         createUser: {
@@ -112,17 +113,26 @@ const mutationSchema = new GraphQLObjectType<UserModel, ContextModel>({
             args: {
                 dto: { type: createUserInput }
             },
+            resolve: async (root, args: { dto: UserInputModel }, { prisma }) => {
+                return await prisma.user.create({ data: args.dto });
+            },
         },
         createPost: {
             type: post as GraphQLObjectType,
             args: {
                 dto: { type: createPostInput }
             },
+            resolve: async (root, args: { dto: PostInputModel }, { prisma }) => {
+                return await prisma.post.create({ data: args.dto });
+            },
         },
         createProfile: {
             type: profile as GraphQLObjectType,
             args: {
                 dto: { type: createProfileInput }
+            },
+            resolve: async (root, args: { dto: ProfileInputModel }, { prisma }) => {
+                return await prisma.profile.create({ data: args.dto });
             },
         },
         deleteUser: {
@@ -165,7 +175,7 @@ const mutationSchema = new GraphQLObjectType<UserModel, ContextModel>({
             }
         },
         subscribeTo: {
-            type: user,
+            type: user as GraphQLObjectType,
             args: {
                 userId: { type: UUIDType },
                 authorId: { type: UUIDType },

@@ -10,3 +10,8 @@ export interface UserModel {
     userSubscribedTo: UserModel[],
     subscribedToUser: UserModel[],
 }
+
+export interface UserInputModel {
+    name: string,
+    balance: number,
+}
