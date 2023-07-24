@@ -1,5 +1,5 @@
 import { Type } from '@fastify/type-provider-typebox';
-import { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql";
+import { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLBoolean } from "graphql";
 import { member } from "./types/member.js";
 import { changePostInput, createPostInput, post } from "./types/post.js";
 import { changeUserInput, createUserInput, user } from "./types/user.js";
@@ -146,8 +146,7 @@ const mutationSchema = new GraphQLObjectType({
                         where: { id }
                     });
                     return true;
-                }
-                catch {
+                } catch {
                     return false;
                 }
             },
@@ -163,8 +162,7 @@ const mutationSchema = new GraphQLObjectType({
                         where: { id }
                     });
                     return true;
-                }
-                catch {
+                } catch {
                     return false;
                 }
             },
@@ -180,8 +178,7 @@ const mutationSchema = new GraphQLObjectType({
                         where: { id }
                     });
                     return true;
-                }
-                catch {
+                } catch {
                     return false;
                 }
             },
@@ -192,7 +189,7 @@ const mutationSchema = new GraphQLObjectType({
                 id: { type: new GraphQLNonNull(UUIDType) },
                 dto: { type: changeUserInput }
             },
-            resolve: async(root, args: { id: string, dto: UserInputModel}, { prisma }) => {
+            resolve: async (root, args: { id: string, dto: UserInputModel }, { prisma }) => {
                 return await prisma.user.update({
                     where: { id: args.id },
                     data: args.dto,
@@ -205,7 +202,7 @@ const mutationSchema = new GraphQLObjectType({
                 id: { type: new GraphQLNonNull(UUIDType) },
                 dto: { type: changePostInput }
             },
-            resolve: async(root, args: { id: string, dto: PostInputModel}, { prisma }) => {
+            resolve: async (root, args: { id: string, dto: PostInputModel }, { prisma }) => {
                 return await prisma.post.update({
                     where: { id: args.id },
                     data: args.dto,
@@ -218,7 +215,7 @@ const mutationSchema = new GraphQLObjectType({
                 id: { type: new GraphQLNonNull(UUIDType) },
                 dto: { type: changeProfileInput }
             },
-            resolve: async(root, args: { id: string, dto: ProfileInputModel}, { prisma }) => {
+            resolve: async (root, args: { id: string, dto: ProfileInputModel }, { prisma }) => {
                 return await prisma.profile.update({
                     where: { id: args.id },
                     data: args.dto,
@@ -230,14 +227,35 @@ const mutationSchema = new GraphQLObjectType({
             args: {
                 userId: { type: new GraphQLNonNull(UUIDType) },
                 authorId: { type: UUIDType },
-            }
+            },
+            resolve: async (root, { userId, authorId }: { userId: string, authorId: string }, { prisma }) => {
+                return await prisma.user.update({
+                    where: { id: userId },
+                    data: { userSubscribedTo: { create: { authorId } } }
+                });
+            },
         },
         unsubscribeFrom: {
-            type: GraphQLString,
+            type: GraphQLBoolean,
             args: {
                 userId: { type: new GraphQLNonNull(UUIDType) },
-                authorId: { type: UUIDType },
-            }
+                authorId: { type: new GraphQLNonNull(UUIDType) },
+            },
+            resolve: async (root, { userId, authorId }: { userId: string, authorId: string }, { prisma }) => {
+                try {
+                    await prisma.subscribersOnAuthors.delete({
+                        where: {
+                            subscriberId_authorId: {
+                                subscriberId: userId,
+                                authorId,
+                            }
+                        }
+                    });
+                    return true;
+                } catch {
+                    return false;
+                }
+            },
         }
     },
 });
