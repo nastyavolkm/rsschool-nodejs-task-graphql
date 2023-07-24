@@ -189,35 +189,53 @@ const mutationSchema = new GraphQLObjectType({
         changeUser: {
             type: user,
             args: {
-                id: { type: UUIDType },
+                id: { type: new GraphQLNonNull(UUIDType) },
                 dto: { type: changeUserInput }
-            }
+            },
+            resolve: async(root, args: { id: string, dto: UserInputModel}, { prisma }) => {
+                return await prisma.user.update({
+                    where: { id: args.id },
+                    data: args.dto,
+                });
+            },
         },
         changePost: {
             type: post as GraphQLObjectType,
             args: {
-                id: { type: UUIDType },
+                id: { type: new GraphQLNonNull(UUIDType) },
                 dto: { type: changePostInput }
-            }
+            },
+            resolve: async(root, args: { id: string, dto: PostInputModel}, { prisma }) => {
+                return await prisma.post.update({
+                    where: { id: args.id },
+                    data: args.dto,
+                });
+            },
         },
         changeProfile: {
             type: profile as GraphQLObjectType,
             args: {
-                id: { type: UUIDType },
+                id: { type: new GraphQLNonNull(UUIDType) },
                 dto: { type: changeProfileInput }
-            }
+            },
+            resolve: async(root, args: { id: string, dto: ProfileInputModel}, { prisma }) => {
+                return await prisma.profile.update({
+                    where: { id: args.id },
+                    data: args.dto,
+                });
+            },
         },
         subscribeTo: {
             type: user as GraphQLObjectType,
             args: {
-                userId: { type: UUIDType },
+                userId: { type: new GraphQLNonNull(UUIDType) },
                 authorId: { type: UUIDType },
             }
         },
         unsubscribeFrom: {
             type: GraphQLString,
             args: {
-                userId: { type: UUIDType },
+                userId: { type: new GraphQLNonNull(UUIDType) },
                 authorId: { type: UUIDType },
             }
         }
