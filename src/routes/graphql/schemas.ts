@@ -1,5 +1,5 @@
 import { Type } from '@fastify/type-provider-typebox';
-import { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLString } from "graphql";
+import { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql";
 import { member } from "./types/member.js";
 import { changePostInput, createPostInput, post } from "./types/post.js";
 import { changeUserInput, createUserInput, user } from "./types/user.js";
@@ -109,7 +109,7 @@ const mutationSchema = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
         createUser: {
-            type: user,
+            type: user as GraphQLObjectType,
             args: {
                 dto: { type: createUserInput }
             },
@@ -136,22 +136,55 @@ const mutationSchema = new GraphQLObjectType({
             },
         },
         deleteUser: {
-            type: UUIDType,
+            type: GraphQLBoolean,
             args: {
-                id: { type: UUIDType },
+                id: { type: new GraphQLNonNull(UUIDType) },
+            },
+            resolve: async (root, { id }: { id: string }, { prisma }) => {
+                try {
+                    await prisma.user.delete({
+                        where: { id }
+                    });
+                    return true;
+                }
+                catch {
+                    return false;
+                }
             },
         },
         deletePost: {
-            type: UUIDType,
+            type: GraphQLBoolean,
             args: {
-                id: { type: UUIDType },
-            }
+                id: { type: new GraphQLNonNull(UUIDType) },
+            },
+            resolve: async (root, { id }: { id: string }, { prisma }) => {
+                try {
+                    await prisma.post.delete({
+                        where: { id }
+                    });
+                    return true;
+                }
+                catch {
+                    return false;
+                }
+            },
         },
         deleteProfile: {
-            type: UUIDType,
+            type: GraphQLBoolean,
             args: {
-                id: { type: UUIDType },
-            }
+                id: { type: new GraphQLNonNull(UUIDType) },
+            },
+            resolve: async (root, { id }: { id: string }, { prisma }) => {
+                try {
+                    await prisma.profile.delete({
+                        where: { id }
+                    });
+                    return true;
+                }
+                catch {
+                    return false;
+                }
+            },
         },
         changeUser: {
             type: user,
